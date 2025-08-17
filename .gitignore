@@ -2,3 +2,5 @@
 /downloads
 /tmp
 *.pyc
+*.zip
+*.lzh
