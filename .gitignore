@@ -4,3 +4,4 @@
 *.pyc
 *.zip
 *.lzh
+/src/decompress/temp
