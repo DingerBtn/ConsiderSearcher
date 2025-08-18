@@ -1,8 +1,8 @@
 import os
 import tempfile
-from typing import List, Set
+from typing import Callable, List, Set
 from .midi2text import read_midi_text_messages
-from ..decompress.core import decompress_file
+from decompress.core import decompress_file
 
 # 支持的纯文本文件扩展名
 TEXT_EXTENSIONS = {
@@ -88,7 +88,8 @@ def search_in_midi_file(file_path: str, keywords: List[str]) -> List[str]:
 
     return matched_keywords
 
-def search_in_directory(directory_path: str, keywords: List[str], config_path: str = None):
+def search_in_directory(directory_path: str, keywords: List[str], 
+                       callback: Callable = None, config_path: str = None):
     """
     在指定目录中搜索包含关键词的文件
 
@@ -144,14 +145,17 @@ def search_in_directory(directory_path: str, keywords: List[str], config_path: s
             if file_ext in TEXT_EXTENSIONS:
                 matched = search_in_text_file(file_path, keywords)
                 if matched:
-                    print(f"在文本文件 {file_path} 中找到关键词: {', '.join(matched)}")
-                continue
-
-            # 处理MIDI文件
-            if file_ext in MIDI_EXTENSIONS:
-                matched = search_in_midi_file(file_path, keywords)
+                    log = f"在文本文件 {file_path} 中找到关键词: {', '.join(matched)}"
+                    print(log)
+                    if callback:
+                        callback(file_path, matched)
+                
+                # MIDI文件部分同理添加回调
                 if matched:
-                    print(f"在MIDI文件 {file_path} 中找到关键词: {', '.join(matched)}")
+                    log = f"在MIDI文件 {file_path} 中找到关键词: {', '.join(matched)}"
+                    print(log)
+                    if callback:
+                        callback(file_path, matched)
                 continue
 
 # 示例用法
